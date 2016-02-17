@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Web;
-using System.Web.Caching;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Management.Instrumentation;
@@ -10,28 +10,13 @@ namespace CodeEndeavors.Extensions
 {
     public static class ReflectionExtensions
     {
-        private static readonly ConcurrentDictionary<string, Type> m_providers = new ConcurrentDictionary<string, Type>();
+        private static readonly ConcurrentDictionary<string, Type> _cachedTypes = new ConcurrentDictionary<string, Type>();
         public static T GetInstance<T>(this string typeName, string assemblyPath = null)
         {
             var type = typeName.ToType();
-            //if (string.IsNullOrWhiteSpace(typeName))
-            //    throw new ArgumentException("The parameter cannot be null.", "typeName");
-
-            object obj;
-            //if (m_providers.TryGetValue(typeName, out obj))
-            //    return obj.ToType<T>();
-
-            //if (!string.IsNullOrWhiteSpace(assemblyPath))
-            //    Assembly.LoadFrom(assemblyPath);
-
-            //var type = Type.GetType(typeName);
-            //if (type == null)
-            //    throw new TypeLoadException(string.Format("Unable to load type: {0}", typeName));
-
-            obj = Activator.CreateInstance(type);// as IWidgetContentProvider;
+            var obj = Activator.CreateInstance(type);// as IWidgetContentProvider;
             if (obj == null)
                 throw new InstanceNotFoundException(string.Format("Unable to create a valid instance of {0} from type: {1}", typeof(T).ToString(), typeName));
-
             return obj.ToType<T>();
         }
 
@@ -41,7 +26,7 @@ namespace CodeEndeavors.Extensions
                 throw new ArgumentException("The parameter cannot be null.", "typeName");
 
             Type type;
-            if (m_providers.TryGetValue(typeName, out type))
+            if (_cachedTypes.TryGetValue(typeName, out type))
                 return type;
 
             if (!string.IsNullOrWhiteSpace(assemblyPath))
@@ -49,9 +34,17 @@ namespace CodeEndeavors.Extensions
 
             type = Type.GetType(typeName);
             if (type == null)
+            {
+                var assemblies = (from file in new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).GetFiles()
+                                  where file.Extension.ToLower() == ".dll"
+                                  select Assembly.LoadFile(file.FullName));
+                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.StartsWith(typeName))).FirstOrDefault();
+            }
+
+            if (type == null)
                 throw new TypeLoadException(string.Format("Unable to load type: {0}", typeName));
 
-            m_providers[typeName] = type;
+            _cachedTypes[typeName] = type;
             return type;
         }
 

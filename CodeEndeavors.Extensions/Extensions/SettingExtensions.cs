@@ -8,16 +8,6 @@ namespace CodeEndeavors.Extensions
 {
     public static class SettingExtensions
     {
-        public static T GetSetting<T>(this System.Web.Caching.Cache cache, string key, T defaultValue, bool addEntry = false)
-        {
-            var obj = cache[key];
-            if (obj == null)
-                return defaultValue;
-            if (addEntry)
-                cache[key] = defaultValue;
-            return obj.ToType<T>();
-        }
-
         public static T GetSetting<T>(this System.Collections.IDictionary dictionary, string key, T defaultValue, bool addEntry = false)
         {
             if (dictionary.Contains(key))

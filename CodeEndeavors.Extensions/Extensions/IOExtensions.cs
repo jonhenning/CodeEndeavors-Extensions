@@ -1,40 +1,39 @@
 ﻿using System;
 using System.IO;
 using System.Web;
-using System.Web.Caching;
 
 namespace CodeEndeavors.Extensions
 {
     public static class IOExtensions
     {
-        public static T GetFileJSONObject<T>(this string fileName, bool cacheFile = false)
-        {
-            T o = default(T);
-            if (cacheFile)
-                o = Cache.CacheState.Cache.GetSetting<T>(fileName, default(T));
-            if (o == null)
-            {
-                var json = fileName.GetFileContents();
-                o = json.ToObject<T>();
-                if (cacheFile)
-                    Cache.CacheState.Cache.Add(fileName, o, new CacheDependency(fileName), System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
-            }
-            return o;
-        }
+        //public static T GetFileJSONObject<T>(this string fileName, bool cacheFile = false)
+        //{
+        //    T o = default(T);
+        //    if (cacheFile)
+        //        o = Cache.CacheState.Cache.GetSetting<T>(fileName, default(T));
+        //    if (o == null)
+        //    {
+        //        var json = fileName.GetFileContents();
+        //        o = json.ToObject<T>();
+        //        if (cacheFile)
+        //            Cache.CacheState.Cache.Add(fileName, o, new CacheDependency(fileName), System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
+        //    }
+        //    return o;
+        //}
 
-        public static string GetFileContents(this string fileName, bool cacheFile)
-        {
-            if (cacheFile == false)
-                return GetFileContents(fileName);
+        //public static string GetFileContents(this string fileName, bool cacheFile)
+        //{
+        //    if (cacheFile == false)
+        //        return GetFileContents(fileName);
 
-            var contents = Cache.CacheState.Cache.GetSetting<string>(fileName, "");
-            if (String.IsNullOrEmpty(contents))
-            {
-                contents = GetFileContents(fileName);
-                Cache.CacheState.Cache.Add(fileName, contents, new CacheDependency(fileName), System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
-            }
-            return contents;
-        }
+        //    var contents = Cache.CacheState.Cache.GetSetting<string>(fileName, "");
+        //    if (String.IsNullOrEmpty(contents))
+        //    {
+        //        contents = GetFileContents(fileName);
+        //        Cache.CacheState.Cache.Add(fileName, contents, new CacheDependency(fileName), System.Web.Caching.Cache.NoAbsoluteExpiration, System.Web.Caching.Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
+        //    }
+        //    return contents;
+        //}
 
         public static string GetFileContents(this string fileName)
         {
@@ -118,21 +117,21 @@ namespace CodeEndeavors.Extensions
             System.IO.File.WriteAllBytes(fileName, System.Text.Encoding.UTF8.GetBytes(text));
         }
 
-        public static string ResolvePath(this string path, bool ensureExists = false)
-        {
-            var ret = path;
-            if (path.StartsWith("~"))
-            {
-                if (System.Web.HttpContext.Current != null)
-                    ret = System.Web.HttpContext.Current.Server.MapPath(path);
-                else
-                    ret = path.Replace(@"~\", Environment.CurrentDirectory + @"\");
-            }
-            if (ensureExists && !Directory.Exists(ret))
-                Directory.CreateDirectory(ret);
+        //public static string ResolvePath(this string path, bool ensureExists = false)
+        //{
+        //    var ret = path;
+        //    if (path.StartsWith("~"))
+        //    {
+        //        if (System.Web.HttpContext.Current != null)
+        //            ret = System.Web.HttpContext.Current.Server.MapPath(path);
+        //        else
+        //            ret = path.Replace(@"~\", Environment.CurrentDirectory + @"\");
+        //    }
+        //    if (ensureExists && !Directory.Exists(ret))
+        //        Directory.CreateDirectory(ret);
 
-            return ret;
-        }
+        //    return ret;
+        //}
 
         //public static Directory Ensure(this DirectoryInfo
 
