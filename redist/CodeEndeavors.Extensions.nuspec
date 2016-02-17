@@ -14,7 +14,6 @@
             <dependency id="Newtonsoft.Json" version="8.0.2" />
         </dependencies>
         <frameworkAssemblies>
-            <frameworkAssembly assemblyName="System.Web" targetFramework="" />
         </frameworkAssemblies>
     </metadata>
     <files>
