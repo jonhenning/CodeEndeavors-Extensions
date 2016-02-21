@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CodeEndeavors.Extensions;
+using System;
 using System.Linq;
 using System.IO;
 using System.Web;
@@ -46,7 +47,7 @@ namespace CodeEndeavors.Extensions
             if (type == null)
             {
                 var assemblies = getAllAssemblies(assemblyPath);
-                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.StartsWith(typeName))).FirstOrDefault();
+                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.Equals(typeName))).FirstOrDefault();
             }
 
             if (type == null)
@@ -58,20 +59,40 @@ namespace CodeEndeavors.Extensions
 
         public static List<T> GetAllTypes<T>(this T theInterface, string assemblyPath = null) where T : Type
         {
-            return getAllAssemblies(assemblyPath).SelectMany(a => a.GetTypes().Where(t => t.GetInterfaces().Contains(theInterface))).Cast<T>().ToList();
+            return getAllAssemblies(assemblyPath).SelectMany(a => a.GetTypes().Where(
+                t => t.GetInterfaces().Contains(theInterface) && !t.IsInterface
+                )).Cast<T>().ToList();
         }
 
         private static IEnumerable<Assembly> getAllAssemblies(string assemblyPath = null)
         {
             if (string.IsNullOrEmpty(assemblyPath))
-                assemblyPath = AppDomain.CurrentDomain.BaseDirectory;
-            //if (assemblyPath.Equals(AppDomain.CurrentDomain.BaseDirectory, StringComparison.InvariantCultureIgnoreCase))
-            //    return AppDomain.CurrentDomain.GetAssemblies();
+                assemblyPath = AppDomain.CurrentDomain.SetupInformation.PrivateBinPath; //grab web\bin folder if exists
+            if (string.IsNullOrEmpty(assemblyPath))
+                assemblyPath = AppDomain.CurrentDomain.BaseDirectory;   //grab bin folder
+
             if (!_cachedAssemblies.ContainsKey(assemblyPath))
             {
-                _cachedAssemblies[assemblyPath] = (from file in new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).GetFiles()
-                        where file.Extension.ToLower() == ".dll"
-                        select Assembly.LoadFile(file.FullName));
+                var assemblies = new List<Assembly>();
+                var files = Directory.EnumerateFiles(assemblyPath, "*.dll", SearchOption.AllDirectories); 
+                foreach (var file in files)
+                {
+                    var name = Path.GetFileNameWithoutExtension(file);  
+
+                    Assembly assembly = null;
+                    try
+                    {
+                        assembly = AppDomain.CurrentDomain.Load(name);  //for ASP.NET we do not want the assembly in the bin folder so we cannot simply do an Assembly.LoadFile - instead we need to get the file from C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files\............
+                    }
+                    catch (Exception)
+                    {
+                        //todo:  log?
+                    }
+
+                    if (assembly != null)
+                        assemblies.Add(assembly);
+                }
+                _cachedAssemblies[assemblyPath] = assemblies;
             }
             return _cachedAssemblies[assemblyPath];
         }

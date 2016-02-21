@@ -25,5 +25,14 @@ namespace CodeEndeavors.Extensions.UnitTest
                 Assert.IsFalse(string.IsNullOrEmpty(animal.Name));
             }
         }
+
+        [TestMethod]
+        public void GetInstance()
+        {
+            var instance = ReflectionExtensions.GetInstance<IAnimal>("CodeEndeavors.Extensions.UnitTest.DomainObjects.Cat");
+            Assert.IsNotNull(instance);
+            Assert.AreEqual("Crookshanks", instance.Name);
+        }
+
     }
 }
