@@ -43,6 +43,11 @@ namespace CodeEndeavors.Extensions
 
         public static Type ToType(this string typeName, string assemblyPath = null)
         {
+            return ToType(typeName, false, true, assemblyPath);
+        }
+        
+        public static Type ToType(this string typeName, bool onlyPublic, bool throwError, string assemblyPath = null)
+        {
             if (string.IsNullOrWhiteSpace(typeName))
                 throw new ArgumentException("The parameter cannot be null.", "typeName");
 
@@ -57,10 +62,10 @@ namespace CodeEndeavors.Extensions
             if (type == null)
             {
                 var assemblies = getAllAssemblies(assemblyPath);
-                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.Equals(typeName))).FirstOrDefault();
+                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.Equals(typeName) && (onlyPublic == false || t.IsPublic))).FirstOrDefault();
             }
 
-            if (type == null)
+            if (throwError && type == null)
                 throw new TypeLoadException(string.Format("Unable to load type: {0}", typeName));
 
             _cachedTypes[typeName] = type;
