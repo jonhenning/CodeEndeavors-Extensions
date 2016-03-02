@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Management.Instrumentation;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace CodeEndeavors.Extensions
 {
@@ -17,8 +18,17 @@ namespace CodeEndeavors.Extensions
 
         public static T GetInstance<T>(this string typeName, string assemblyPath = null)
         {
-            var type = typeName.ToType();
-            var obj = Activator.CreateInstance(type);// as IWidgetContentProvider;
+            var type = typeName.ToType(assemblyPath);
+            var obj = Activator.CreateInstance(type);
+            if (obj == null)
+                throw new InstanceNotFoundException(string.Format("Unable to create a valid instance of {0} from type: {1}", typeof(T).ToString(), typeName));
+            return obj.ToType<T>();
+        }
+
+        public static T GetInstance<T>(this string typeName, string assemblyPath = null, params object[] args)
+        {
+            var type = typeName.ToType(assemblyPath);
+            var obj = Activator.CreateInstance(type, args);
             if (obj == null)
                 throw new InstanceNotFoundException(string.Format("Unable to create a valid instance of {0} from type: {1}", typeof(T).ToString(), typeName));
             return obj.ToType<T>();
@@ -101,6 +111,77 @@ namespace CodeEndeavors.Extensions
         {
             return Nullable.GetUnderlyingType(typeof(T)) != null;
         }
+
+        public static object InvokeStaticMethod(this Type o, string name)
+        {
+            return ReflectionExtensions.InvokeStaticMethod(o, name, null);
+        }
+
+        public static object InvokeStaticMethod(this Type o, string name, params object[] args)
+        {
+            return o.InvokeMember(name, BindingFlags.InvokeMethod, null, null, args);
+        }
+
+        public static T InvokeStaticMethod<T>(this Type o, string name, params object[] args)
+        {
+            return (T)((object)o.InvokeMember(name, BindingFlags.InvokeMethod, null, null, args));
+        }
+
+        public static object InvokePropertyGet(this object o, string name, params object[] args)
+        {
+            return o.GetType().InvokeMember(name, BindingFlags.GetProperty, null, RuntimeHelpers.GetObjectValue(o), args);
+        }
+
+        public static T InvokePropertyGet<T>(this object o, string name)
+        {
+            return (T)((object)ReflectionExtensions.InvokePropertyGet(RuntimeHelpers.GetObjectValue(o), name));
+        }
+
+        public static T InvokePropertyGet<TType, T>(this TType o, string name)
+        {
+            return (T)((object)ReflectionExtensions.InvokePropertyGet(o, name));
+        }
+
+        public static object InvokePropertyGet(this object o, string name)
+        {
+            return ReflectionExtensions.InvokePropertyGet(RuntimeHelpers.GetObjectValue(o), name, null);
+        }
+
+        public static void InvokePropertySet(this object o, string name, params object[] args)
+        {
+            bool flag = args.Length == 1;
+            if (flag)
+            {
+                o.GetType().InvokeMember(name, BindingFlags.SetProperty, null, RuntimeHelpers.GetObjectValue(o), args);
+            }
+            else
+            {
+                o.GetType().GetProperty(name).SetValue(RuntimeHelpers.GetObjectValue(o), RuntimeHelpers.GetObjectValue(args[1]), new object[]
+		        {
+			        RuntimeHelpers.GetObjectValue(args[0])
+		        });
+            }
+        }
+
+        public static void InvokeStaticPropertySet(this Type o, string name, params object[] args)
+        {
+            bool flag = args.Length == 1;
+            if (flag)
+            {
+                o.InvokeMember(name, BindingFlags.Static | BindingFlags.SetProperty, null, null, args);
+            }
+            else
+            {
+                ReflectionExtensions.InvokePropertySet(RuntimeHelpers.GetObjectValue(o.GetProperty(name, BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty).GetValue(null, null)), "Item", new object[]
+		        {
+			        RuntimeHelpers.GetObjectValue(args[0]),
+			        RuntimeHelpers.GetObjectValue(args[1])
+		        });
+            }
+        }
+
+
+
     }
 
 }
