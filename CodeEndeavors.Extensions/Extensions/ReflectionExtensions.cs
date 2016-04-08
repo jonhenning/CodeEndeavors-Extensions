@@ -62,7 +62,15 @@ namespace CodeEndeavors.Extensions
             if (type == null)
             {
                 var assemblies = getAllAssemblies(assemblyPath);
-                type = assemblies.SelectMany(a => a.GetTypes().Where(t => t.FullName.Equals(typeName) && (onlyPublic == false || t.IsPublic))).FirstOrDefault();
+                type = assemblies.SelectMany(a => 
+                {
+                    try 
+                    {
+                        return a.GetTypes().Where(t => t.FullName.Equals(typeName) && (onlyPublic == false || t.IsPublic));
+                    }
+                    catch (Exception ex) { }    //eat exception
+                    return new List<Type>();
+                }).FirstOrDefault();
             }
 
             if (throwError && type == null)
