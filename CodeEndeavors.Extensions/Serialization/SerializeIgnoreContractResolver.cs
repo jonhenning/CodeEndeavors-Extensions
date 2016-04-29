@@ -21,15 +21,20 @@ namespace CodeEndeavors.Extensions.Serialization
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+            property.Ignored |= member.Name.StartsWith("_");
             property.Ignored |= ShouldIgnore(member);// member.GetCustomAttributes(typeof(SerializeIgnoreAttribute), true).Length > 0;
             return property;
         }
 
         private bool ShouldIgnore(MemberInfo member)
         {
-            var attr = member.GetCustomAttributes(typeof(SerializeIgnoreAttribute), true).SingleOrDefault();
-            if (attr != null)
-                return (attr as SerializeIgnoreAttribute).IgnoreTypes.Contains(_ignoreType);
+            if (!string.IsNullOrEmpty(_ignoreType))
+            {
+                var attr = member.GetCustomAttributes(typeof(SerializeIgnoreAttribute), true).SingleOrDefault();
+                if (attr != null)
+                    return (attr as SerializeIgnoreAttribute).IgnoreTypes.Contains(_ignoreType);
+            }
             return false;
         }
 
