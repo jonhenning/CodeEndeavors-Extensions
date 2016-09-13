@@ -98,9 +98,19 @@ namespace CodeEndeavors.Extensions
 
         public static List<T> GetAllTypes<T>(this T theInterface, string assemblyPath = null) where T : Type
         {
-            return getAllAssemblies(assemblyPath).SelectMany(a => a.GetTypes().Where(
-                t => t.GetInterfaces().Contains(theInterface) && !t.IsInterface
-                )).Cast<T>().ToList();
+            return getAllAssemblies(assemblyPath).SelectMany(a => 
+                {
+                    var ret = new List<Type>();
+                    try
+                    {
+                        ret = a.GetTypes().Where(t => t.GetInterfaces().Contains(theInterface) && !t.IsInterface).ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        //todo: log?
+                    }
+                    return ret;
+                }).Cast<T>().ToList();
         }
 
         private static IEnumerable<Assembly> getAllAssemblies(string assemblyPath = null)
