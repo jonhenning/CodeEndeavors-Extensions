@@ -36,9 +36,25 @@ namespace CodeEndeavors.Extensions
 
         public static List<T> GetAllInstances<T>(string assemblyPath = null)
         {
-            Type theType = typeof(T);
-            var types = theType.GetAllTypes(assemblyPath);
-            return types.Select(t => Activator.CreateInstance(t)).Cast<T>().ToList();
+            try
+            {
+                Type theType = typeof(T);
+                var types = theType.GetAllTypes(assemblyPath);
+                return types.Select(t => Activator.CreateInstance(t)).Cast<T>().ToList();
+            }
+            catch (System.Reflection.ReflectionTypeLoadException ex)
+            {
+                var sb = new System.Text.StringBuilder();
+                foreach (var e in ex.LoaderExceptions)
+                    sb.AppendLine(e.Message);
+                sb.AppendLine(ex.Message);
+                throw new Exception(sb.ToString());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         public static Type ToType(this string typeName, string assemblyPath = null)
