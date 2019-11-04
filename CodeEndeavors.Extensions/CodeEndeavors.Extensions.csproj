@@ -52,6 +52,7 @@
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Serialization\JsonDateTimeConverter.cs" />
     <Compile Include="Serialization\SerializeIgnoreAttribute.cs" />
     <Compile Include="Serialization\SerializeIgnoreContractResolver.cs" />
     <Compile Include="Extensions\SettingExtensions.cs" />
