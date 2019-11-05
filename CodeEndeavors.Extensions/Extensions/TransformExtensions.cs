@@ -66,25 +66,31 @@ namespace CodeEndeavors.Extensions
             settings.ContractResolver = new Serialization.SerializeIgnoreContractResolver(ignoreType);
             if (preserveObjectReferences)
                 settings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+
+            JsonSettingsDelegate?.Invoke(settings); //allow for global replacement of json settings
+
             return JsonConvert.SerializeObject(obj, format, settings);
         }
 
-    //    /// <summary>
-    //    /// Returns an Object with the specified Type and whose value is equivalent to the specified object.
-    //    /// </summary>
-    //    /// <param name="value">An Object that implements the IConvertible interface.</param>
-    //    /// <param name="conversionType">The Type to which value is to be converted.</param>
-    //    /// <returns>An object whose Type is conversionType (or conversionType's underlying type if conversionType
-    //    /// is Nullable&lt;&gt;) and whose value is equivalent to value. -or- a null reference, if value is a null
-    //    /// reference and conversionType is not a value type.</returns>
-    //    /// <remarks>
-    //    /// This method exists as a workaround to System.Convert.ChangeType(Object, Type) which does not handle
-    //    /// nullables as of version 2.0 (2.0.50727.42) of the .NET Framework. The idea is that this method will
-    //    /// be deleted once Convert.ChangeType is updated in a future version of the .NET Framework to handle
-    //    /// nullable types, so we want this to behave as closely to Convert.ChangeType as possible.
-    //    /// This method was written by Peter Johnson at:
-    //    /// http://aspalliance.com/author.aspx?uId=1026.
-    //    /// </remarks>
+        //allow for global replacement of json settings
+        public static Action<JsonSerializerSettings> JsonSettingsDelegate { get; set; }
+
+        //    /// <summary>
+        //    /// Returns an Object with the specified Type and whose value is equivalent to the specified object.
+        //    /// </summary>
+        //    /// <param name="value">An Object that implements the IConvertible interface.</param>
+        //    /// <param name="conversionType">The Type to which value is to be converted.</param>
+        //    /// <returns>An object whose Type is conversionType (or conversionType's underlying type if conversionType
+        //    /// is Nullable&lt;&gt;) and whose value is equivalent to value. -or- a null reference, if value is a null
+        //    /// reference and conversionType is not a value type.</returns>
+        //    /// <remarks>
+        //    /// This method exists as a workaround to System.Convert.ChangeType(Object, Type) which does not handle
+        //    /// nullables as of version 2.0 (2.0.50727.42) of the .NET Framework. The idea is that this method will
+        //    /// be deleted once Convert.ChangeType is updated in a future version of the .NET Framework to handle
+        //    /// nullable types, so we want this to behave as closely to Convert.ChangeType as possible.
+        //    /// This method was written by Peter Johnson at:
+        //    /// http://aspalliance.com/author.aspx?uId=1026.
+        //    /// </remarks>
         private static object ChangeType(object value, Type conversionType)
         {
             // Note: This if block was taken from Convert.ChangeType as is, and is needed here since we're
