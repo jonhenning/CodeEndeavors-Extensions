@@ -49,6 +49,7 @@ namespace CodeEndeavors.Extensions
             settings.Converters.Add(new IsoDateTimeConverter() { DateTimeStyles = System.Globalization.DateTimeStyles.AdjustToUniversal });
             //settings.Converters.Add(new CodeEndeavors.ResourceManager.Converters.DynamicJsonConverter());
             //settings.Converters
+            JsonSettingsDelegate?.Invoke(settings, false); //allow for global replacement of json settings
             return JsonConvert.DeserializeObject<T>(json, settings);
         }
 
@@ -67,13 +68,12 @@ namespace CodeEndeavors.Extensions
             if (preserveObjectReferences)
                 settings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
 
-            JsonSettingsDelegate?.Invoke(settings); //allow for global replacement of json settings
-
+            JsonSettingsDelegate?.Invoke(settings, true); //allow for global replacement of json settings
             return JsonConvert.SerializeObject(obj, format, settings);
         }
 
-        //allow for global replacement of json settings
-        public static Action<JsonSerializerSettings> JsonSettingsDelegate { get; set; }
+        //allow for global replacement of json settings - second param isToJson
+        public static Action<JsonSerializerSettings, bool> JsonSettingsDelegate { get; set; }
 
         //    /// <summary>
         //    /// Returns an Object with the specified Type and whose value is equivalent to the specified object.
