@@ -37,23 +37,22 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: NuGetCommand@2
   inputs:
     command: pack
-    packagesToPack: '**/CodeEndeavors.Extensions.nuspec'
+    packagesToPack: '$(Build.SourcesDirectory)/redist/CodeEndeavors.Extensions.nuspec'
     versioningScheme: byEnvVar
     versionEnvVar: PackageVersion
-    packDestination: '$(build.artifactStagingDirectory)\nugetpkg'
+    packDestination: '$(Build.SourcesDirectory)/redist'
 
 - task: NuGetCommand@2
   displayName: 'NuGet push'
   inputs:
     command: 'push'
-    packagesToPush: '$(build.artifactStagingDirectory)/**/*.nupkg;!$(build.artifactStagingDirectory)/**/*.symbols.nupkg'
+    packagesToPush: '$(Build.SourcesDirectory)/redist/**/*.nupkg;!$(Build.SourcesDirectory)/redist/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
     allowPackageConflicts: false
