@@ -36,7 +36,7 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.sln'
+    solution: '$(Build.SourcesDirectory)/CodeEndeavors.Extensions/CodeEndeavors.Extensions.csproj'
 
 - task: NuGetCommand@2
   inputs:
