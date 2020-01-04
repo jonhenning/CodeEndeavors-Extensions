@@ -13,7 +13,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  PackageVersion: '2.0.16'
+  PackageVersion: '2.0.17'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -25,12 +25,16 @@ steps:
 - task: Assembly-Info-NetFramework@2
   inputs:
     Path: '$(Build.SourcesDirectory)'
-    FileNames: |
-      **\AssemblyInfo.cs
+    FileNames: '**\AssemblyInfo.cs'
     InsertAttributes: false
     FileEncoding: 'auto'
     WriteBOM: false
+    Title: 'Code Endeavors Extensions'
+    Description: 'Code Endeavors Extension Methods'
+    Company: 'Code Endeavors, Inc.'
     VersionNumber: 'PackageVersion'
+    FileVersionNumber: 'PackageVersion'
+    InformationalVersion: 'PackageVersion'
     LogLevel: 'verbose'
     FailOnWarning: false
 
