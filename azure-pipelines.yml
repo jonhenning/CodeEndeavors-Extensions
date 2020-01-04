@@ -34,11 +34,14 @@ steps:
     LogLevel: 'verbose'
     FailOnWarning: false
 
-- task: VSBuild@1
+- task: MSBuild@1
   inputs:
-    solution: '**\*.sln'
-    createLogFile: true
-    logFileVerbosity: 'diagnostic'
+    solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
+
+- task: MSBuild@1
+  inputs:
+    solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
+    msbuildArguments: '/t:CreateSetupPackage'
 
 - task: NuGetCommand@2
   inputs:
