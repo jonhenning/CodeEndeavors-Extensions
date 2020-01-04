@@ -28,4 +28,19 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+- task: NuGetCommand@2
+  inputs:
+    command: pack
+    packagesToPack: '**/CodeEndeavors.Extensions.nuspec'
+    versioningScheme: byEnvVar
+    versionEnvVar: PackageVersion
+    packDestination: '$(Build.ArtifactStagingDirectory)\nugetpkg'
 
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
+    allowPackageConflicts: true
