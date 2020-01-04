@@ -32,15 +32,15 @@ steps:
     Title: 'Code Endeavors Extensions'
     Description: 'Code Endeavors Extension Methods'
     Company: 'Code Endeavors, Inc.'
-    VersionNumber: 'PackageVersion'
-    FileVersionNumber: 'PackageVersion'
-    InformationalVersion: 'PackageVersion'
+    VersionNumber: '$(PackageVersion)'
+    FileVersionNumber: '$(PackageVersion)'
+    InformationalVersion: '$(PackageVersion)'
     LogLevel: 'verbose'
     FailOnWarning: false
 
-- task: MSBuild@1
+- task: VSBuild@1
   inputs:
-    solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
+    solution: '**\*.sln'
 
 - task: NuGetCommand@2
   inputs:
