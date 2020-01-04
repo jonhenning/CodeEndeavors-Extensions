@@ -37,11 +37,7 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
-
-- task: MSBuild@1
-  inputs:
-    solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
-    msbuildArguments: '/t:CreateSetupPackage'
+    msbuildVersion: '4.0'
 
 - task: NuGetCommand@2
   inputs:
