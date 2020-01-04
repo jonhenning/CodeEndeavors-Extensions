@@ -47,13 +47,13 @@ steps:
     packagesToPack: '**/CodeEndeavors.Extensions.nuspec'
     versioningScheme: byEnvVar
     versionEnvVar: PackageVersion
-    packDestination: '$(Build.ArtifactStagingDirectory)\nugetpkg'
+    packDestination: '$(build.artifactStagingDirectory)\nugetpkg'
 
 - task: NuGetCommand@2
   displayName: 'NuGet push'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    packagesToPush: '$(build.artifactStagingDirectory)/**/*.nupkg;!$(build.artifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
     allowPackageConflicts: false
