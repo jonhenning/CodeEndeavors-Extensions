@@ -37,7 +37,7 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
-    msbuildVersion: '4.0'
+    msbuildVersion: '12.0'
 
 - task: NuGetCommand@2
   inputs:
