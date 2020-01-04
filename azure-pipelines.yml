@@ -37,7 +37,8 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '**\*.sln'
-    vsVersion: '14.0'
+    createLogFile: true
+    logFileVerbosity: 'diagnostic'
 
 - task: NuGetCommand@2
   inputs:
