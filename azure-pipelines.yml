@@ -34,11 +34,9 @@ steps:
     LogLevel: 'verbose'
     FailOnWarning: false
 
-- task: VSBuild@1
+- task: MSBuild@1
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    solution: '**/*.sln'
 
 - task: NuGetCommand@2
   inputs:
