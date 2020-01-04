@@ -34,9 +34,10 @@ steps:
     LogLevel: 'verbose'
     FailOnWarning: false
 
-- task: MSBuild@1
+- task: VSBuild@1
   inputs:
-    solution: '$(Build.SourcesDirectory)/CodeEndeavors.Extensions/CodeEndeavors.Extensions.csproj'
+    solution: '**\*.sln'
+    vsVersion: '14.0'
 
 - task: NuGetCommand@2
   inputs:
