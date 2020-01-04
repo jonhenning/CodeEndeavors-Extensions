@@ -13,7 +13,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  PackageVersion: '2.0.15'
+  PackageVersion: '2.0.16'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -37,7 +37,6 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: 'CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj'
-    msbuildVersion: '12.0'
 
 - task: NuGetCommand@2
   inputs:
