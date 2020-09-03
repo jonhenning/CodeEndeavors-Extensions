@@ -47,7 +47,7 @@ steps:
     command: pack
     packagesToPack: '$(Build.SourcesDirectory)/redist/CodeEndeavors.Extensions.nuspec'
     versioningScheme: byEnvVar
-    versionEnvVar: PackageVersion
+    versionEnvVar: 'PackageVersion'
     packDestination: '$(Build.SourcesDirectory)/redist'
 
 - task: NuGetCommand@2
