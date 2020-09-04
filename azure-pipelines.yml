@@ -50,11 +50,24 @@ steps:
     versionEnvVar: 'PackageVersion'
     packDestination: '$(Build.SourcesDirectory)/redist'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet push'
+
+- task: CopyFiles@2
   inputs:
-    command: 'push'
-    packagesToPush: '$(Build.SourcesDirectory)/redist/**/*.nupkg;!$(Build.SourcesDirectory)/redist/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
-    allowPackageConflicts: false
+    SourceFolder: '$(Build.SourcesDirectory)/redist/**/'
+    Contents: '*.nupkg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nupkg'
+    publishLocation: 'Container'
+
+# - task: NuGetCommand@2
+#   displayName: 'NuGet push'
+#   inputs:
+#     command: 'push'
+#     packagesToPush: '!$(Build.SourcesDirectory)/redist/**/*.symbols.nupkg'
+#     nuGetFeedType: 'internal'
+#     publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
+#     allowPackageConflicts: false
