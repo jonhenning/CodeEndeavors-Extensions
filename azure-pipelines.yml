@@ -50,7 +50,6 @@ steps:
     versionEnvVar: 'PackageVersion'
     packDestination: '$(Build.SourcesDirectory)/redist'
 
-
 # - task: CopyFiles@2
 #   inputs:
 #     SourceFolder: '$(Build.SourcesDirectory)/redist'
