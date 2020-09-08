@@ -1,16 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeEndeavors.Extensions", "CodeEndeavors.Extensions\CodeEndeavors.Extensions.csproj", "{AEF255A3-9CF0-42EF-96DE-DDCA673BF92E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{ACE967B7-5E38-49B5-BDE6-73EC1503B321}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeEndeavors.Extensions.UnitTest", "CodeEndeavors.Extensions.UnitTest\CodeEndeavors.Extensions.UnitTest.csproj", "{FCC2B308-CD52-4D7E-89E9-81151821C6EB}"
 EndProject
@@ -31,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45C501CA-27D9-4539-85E4-2FC8A52C7E99}
 	EndGlobalSection
 EndGlobal
