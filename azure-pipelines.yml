@@ -3,8 +3,7 @@
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
-trigger:
-- master
+name: 2.1.$(Rev:r)
 
 pool:
   vmImage: 'windows-latest'
@@ -13,7 +12,6 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  PackageVersion: '2.1.$(Build.BuildID).0'
 
 steps:
 - task: NuGetToolInstaller@1
@@ -32,9 +30,9 @@ steps:
     Title: 'Code Endeavors Extensions'
     Description: 'Code Endeavors Extension Methods'
     Company: 'Code Endeavors, Inc.'
-    VersionNumber: '$(PackageVersion)'
-    FileVersionNumber: '$(PackageVersion)'
-    InformationalVersion: '$(PackageVersion)'
+    VersionNumber: '$(Build.BuildNumber)'
+    FileVersionNumber: '$(Build.BuildNumber)'
+    InformationalVersion: '$(Build.BuildNumber)'
     LogLevel: 'verbose'
     FailOnWarning: false
 
@@ -46,8 +44,7 @@ steps:
   inputs:
     command: pack
     packagesToPack: '$(Build.SourcesDirectory)/redist/CodeEndeavors.Extensions.nuspec'
-    versioningScheme: byEnvVar
-    versionEnvVar: 'PackageVersion'
+    versioningScheme: byBuildNumber
     packDestination: '$(Build.SourcesDirectory)/redist'
 
 # - task: CopyFiles@2
@@ -62,18 +59,18 @@ steps:
 #     ArtifactName: 'nupkg'
 #     publishLocation: 'Container'
 
-# - task: NuGetCommand@2
-#   displayName: 'NuGet push'
-#   inputs:
-#     command: 'push'
-#     packagesToPush: '$(Build.SourcesDirectory)/redist/*.nupkg'
-#     nuGetFeedType: 'internal'
-#     publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
-#     allowPackageConflicts: false
-
 - task: NuGetCommand@2
+  displayName: 'NuGet push'
   inputs:
     command: 'push'
     packagesToPush: '$(Build.SourcesDirectory)/redist/*.nupkg'
-    nuGetFeedType: 'external'
-    publishFeedCredentials: 'Nuget.org'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'ac758a19-2517-4b8d-9d83-43bd02106e50'
+    allowPackageConflicts: false
+
+# - task: NuGetCommand@2
+#   inputs:
+#     command: 'push'
+#     packagesToPush: '$(Build.SourcesDirectory)/redist/*.nupkg'
+#     nuGetFeedType: 'external'
+#     publishFeedCredentials: 'Nuget.org'
