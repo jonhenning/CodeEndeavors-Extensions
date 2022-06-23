@@ -5,6 +5,11 @@
 
 name: 2.1.$(Rev:r)
 
+trigger:
+- 2.1
+
+pr: none
+
 pool:
   vmImage: 'windows-latest'
 
