@@ -34,12 +34,34 @@ namespace CodeEndeavors.Extensions
             return obj.ToType<T>();
         }
 
-        public static List<T> GetAllInstances<T>(string assemblyPath = null)
+        public static List<T> GetAllInstances<T>(bool onlyLoadedAssemblies)
         {
             try
             {
                 Type theType = typeof(T);
-                var types = theType.GetAllTypes(assemblyPath);
+                var types = theType.GetAllTypes(onlyLoadedAssemblies);
+                return types.Select(t => Activator.CreateInstance(t)).Cast<T>().ToList();
+            }
+            catch (System.Reflection.ReflectionTypeLoadException ex)
+            {
+                var sb = new System.Text.StringBuilder();
+                foreach (var e in ex.LoaderExceptions)
+                    sb.AppendLine(e.Message);
+                sb.AppendLine(ex.Message);
+                throw new Exception(sb.ToString());
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static List<T> GetAllInstances<T>(string assemblyPath = null, string searchPattern = "*.dll")
+        {
+            try
+            {
+                Type theType = typeof(T);
+                var types = theType.GetAllTypes(assemblyPath, searchPattern);
                 return types.Select(t => Activator.CreateInstance(t)).Cast<T>().ToList();
             }
             catch (System.Reflection.ReflectionTypeLoadException ex)
@@ -96,9 +118,29 @@ namespace CodeEndeavors.Extensions
             return type;
         }
 
-        public static List<T> GetAllTypes<T>(this T theInterface, string assemblyPath = null) where T : Type
+        public static List<T> GetAllTypes<T>(this T theInterface, bool onlyLoadedAssemblies) where T : Type
         {
-            return getAllAssemblies(assemblyPath).SelectMany(a => 
+            if (onlyLoadedAssemblies) {
+                return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+                    {
+                        var ret = new List<Type>();
+                        try
+                        {
+                            ret = a.GetTypes().Where(t => t.GetInterfaces().Contains(theInterface) && !t.IsInterface).ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                                //todo: log?
+                        }
+                        return ret;
+                    }).Cast<T>().ToList();        
+            }
+            return GetAllTypes(theInterface);
+        }
+
+        public static List<T> GetAllTypes<T>(this T theInterface, string assemblyPath = null, string searchPattern = "*.dll") where T : Type
+        {
+            return getAllAssemblies(assemblyPath, searchPattern).SelectMany(a => 
                 {
                     var ret = new List<Type>();
                     try
@@ -113,7 +155,7 @@ namespace CodeEndeavors.Extensions
                 }).Cast<T>().ToList();
         }
 
-        private static IEnumerable<Assembly> getAllAssemblies(string assemblyPath = null)
+        private static IEnumerable<Assembly> getAllAssemblies(string assemblyPath = null, string searchPattern = "*.dll")
         {
             if (string.IsNullOrEmpty(assemblyPath))
                 assemblyPath = AppDomain.CurrentDomain.SetupInformation.PrivateBinPath; //grab web\bin folder if exists
@@ -123,7 +165,7 @@ namespace CodeEndeavors.Extensions
             if (!_cachedAssemblies.ContainsKey(assemblyPath))
             {
                 var assemblies = new List<Assembly>();
-                var files = Directory.EnumerateFiles(assemblyPath, "*.dll", SearchOption.AllDirectories); 
+                var files = Directory.EnumerateFiles(assemblyPath, searchPattern, SearchOption.AllDirectories); 
                 foreach (var file in files)
                 {
                     var name = Path.GetFileNameWithoutExtension(file);  
